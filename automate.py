@@ -122,10 +122,22 @@ class Automate:
         dot.render(filename, format='png', cleanup=True)
 
     
-    
+    ## Ajouter une transition qui peut avoir un ou plusieurs symboles
+        
+    def ajouter_transition_multi(self, source, symboles, destination):
+        if source not in self.etats or destination not in self.etats:
+            raise ValueError("État source ou destination invalide")
+        for symbole in symboles:
+            ## Si un transition existe déjà, on ajoute le symbole à la liste des symboles
+            if source not in self.transitions:
+                self.transitions[source] = {}
+            if symbole in self.transitions[source]:
+                self.transitions[source][symbole].append(destination)
+            else:
+                self.transitions[source][symbole] = [destination]
 
 
-
+                
 
 ## test ##
 
@@ -139,13 +151,16 @@ automate.ajouter_etat('3', est_terminal=True)
 automate.ajouter_etat('4')
 
 # Ajout des transitions
-automate.ajouter_transition('1', 'a', '2')
-automate.ajouter_transition('2', 'b', '3')
-automate.ajouter_transition('3', 'c','4')
-automate.ajouter_transition('3', 'd','4')
-automate.ajouter_transition('3', 'b', '3')
+automate.ajouter_transition_multi('1', 'a', '2')
+automate.ajouter_transition_multi('2', 'b', '3')
+automate.ajouter_transition_multi('3', 'c','4')
+automate.ajouter_transition_multi('3', 'd','4')
+automate.ajouter_transition_multi('3', 'ba', '3')
 
 # Affichage de l'automate
 print(automate)
-print(automate.to_dot())
-automate.to_png('automate')
+#print(automate.to_dot())
+#automate.to_png('automate')
+
+
+
