@@ -1,3 +1,5 @@
+from graphviz import Digraph
+
 class Automate:
 
     """
@@ -6,7 +8,6 @@ class Automate:
             - alphabet: l'alphabet de l'automate
             - self : l'automate
     """
-
     def __init__(self, alphabet):
         self.alphabet = alphabet
         self.etats = set()
@@ -89,6 +90,40 @@ class Automate:
             for symbole, destination in transitions.items():
                 result += f"     {source} --({symbole})--> {destination}\n"
         return result
+    
+    """
+        La fonction to_dot permet de générer une représentation graphique de l'automate au format DOT.
+        retourne:
+            - une chaîne de caractères représentant l'automate au format DOT
+    """
+    def to_dot(self):
+        dot = Digraph()
+        dot.attr(rankdir='LR')
+        for etat in self.etats:
+            if etat in self.initiaux:
+                dot.node(etat, shape='point')
+            if etat in self.terminaux:
+                dot.node(etat, shape='doublecircle')
+            dot.node(etat)
+        for source, transitions in self.transitions.items():
+
+            for symbole, destination in transitions.items():
+                dot.edge(source, destination, label=symbole)
+            
+        return dot
+
+    """
+        La fonction to_png permet de générer une représentation graphique de l'automate au format PNG.
+        paramètres:
+            - filename: le nom du fichier PNG à générer
+    """
+    def to_png(self, filename):
+        dot = self.to_dot()
+        dot.render(filename, format='png', cleanup=True)
+
+    
+    
+
 
 
 
@@ -105,10 +140,12 @@ automate.ajouter_etat('4')
 
 # Ajout des transitions
 automate.ajouter_transition('1', 'a', '2')
-automate.ajouter_transition('1', 'b', '1')
 automate.ajouter_transition('2', 'b', '3')
 automate.ajouter_transition('3', 'c','4')
 automate.ajouter_transition('3', 'd','4')
+automate.ajouter_transition('3', 'b', '3')
 
 # Affichage de l'automate
 print(automate)
+print(automate.to_dot())
+automate.to_png('automate')
