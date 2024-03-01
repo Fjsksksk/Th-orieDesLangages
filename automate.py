@@ -1,4 +1,13 @@
+from graphviz import Digraph
+
 class Automate:
+
+    """
+        La fonction __init__ permet de créer un automate avec un alphabet donné.
+        paramètres:
+            - alphabet: l'alphabet de l'automate
+            - self : l'automate
+    """
     def __init__(self, alphabet):
         self.alphabet = alphabet
         self.etats = set()
@@ -6,6 +15,13 @@ class Automate:
         self.terminaux = set()
         self.transitions = {}
 
+    """
+        La fonction ajouter_etat permet d'ajouter un état à l'automate.
+        paramètres:
+            - etat: l'état à ajouter
+            - est_initial: indique si l'état est initial
+            - est_terminal: indique si l'état est terminal
+    """
     def ajouter_etat(self, etat, est_initial=False, est_terminal=False):
         self.etats.add(etat)
         if est_initial:
@@ -13,6 +29,13 @@ class Automate:
         if est_terminal:
             self.terminaux.add(etat)
 
+    """
+        La fonction ajouter_transition permet d'ajouter une transition à l'automate.
+        paramètres:
+            - source: l'état source de la transition
+            - symbole: le symbole de la transition
+            - destination: l'état destination de la transition
+    """
     def ajouter_transition(self, source, symbole, destination):
         if source not in self.etats or destination not in self.etats:
             raise ValueError("État source ou destination invalide")
@@ -24,15 +47,39 @@ class Automate:
             raise ValueError("Transition déjà définie pour ce symbole")
         self.transitions[source][symbole] = destination
 
+    """
+        La fonction symbole_transition permet de récupérer le symbole d'une transition entre deux états.
+        paramètres:
+            - source: l'état source de la transition
+            - destination: l'état destination de la transition
+    
+        retourne:
+            - le symbole de la transition si elle existe, None sinon
+
+    """
     def symbole_transition(self, source, destination):
         for symbole, dest in self.transitions.get(source, {}).items():
             if dest == destination:
                 return symbole
         return None
 
+    """
+        La fonction destination_transition permet de récupérer l'état destination d'une transition à partir d'un état source et d'un symbole.
+        paramètres:
+            - source: l'état source de la transition
+            - symbole: le symbole de la transition
+    
+        retourne:
+            - l'état destination de la transition si elle existe, None sinon
+    """
     def destination_transition(self, source, symbole):
         return self.transitions.get(source, {}).get(symbole)
 
+    """
+        La fonction __str__ permet d'afficher l'automate.
+        retourne:
+            - une chaîne de caractères représentant l'automate
+    """
     def __str__(self):
         result = "Alphabet: " + str(self.alphabet) + "\n"
         result += "Etats: " + str(self.etats) + "\n"
@@ -43,6 +90,40 @@ class Automate:
             for symbole, destination in transitions.items():
                 result += f"     {source} --({symbole})--> {destination}\n"
         return result
+    
+    """
+        La fonction to_dot permet de générer une représentation graphique de l'automate au format DOT.
+        retourne:
+            - une chaîne de caractères représentant l'automate au format DOT
+    """
+    def to_dot(self):
+        dot = Digraph()
+        dot.attr(rankdir='LR')
+        for etat in self.etats:
+            if etat in self.initiaux:
+                dot.node(etat, shape='point')
+            if etat in self.terminaux:
+                dot.node(etat, shape='doublecircle')
+            dot.node(etat)
+        for source, transitions in self.transitions.items():
+
+            for symbole, destination in transitions.items():
+                dot.edge(source, destination, label=symbole)
+            
+        return dot
+
+    """
+        La fonction to_png permet de générer une représentation graphique de l'automate au format PNG.
+        paramètres:
+            - filename: le nom du fichier PNG à générer
+    """
+    def to_png(self, filename):
+        dot = self.to_dot()
+        dot.render(filename, format='png', cleanup=True)
+
+    
+    
+
 
 
 
@@ -59,10 +140,12 @@ automate.ajouter_etat('4')
 
 # Ajout des transitions
 automate.ajouter_transition('1', 'a', '2')
-automate.ajouter_transition('1', 'b', '1')
 automate.ajouter_transition('2', 'b', '3')
 automate.ajouter_transition('3', 'c','4')
 automate.ajouter_transition('3', 'd','4')
+automate.ajouter_transition('3', 'b', '3')
 
 # Affichage de l'automate
 print(automate)
+print(automate.to_dot())
+automate.to_png('automate')
