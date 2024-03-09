@@ -33,47 +33,32 @@ class Automate:
         La fonction ajouter_transition permet d'ajouter une transition à l'automate.
         paramètres:
             - source: l'état source de la transition
-            - symbole: le symbole de la transition
+            - symboles: les symboles de la transition (une liste)
             - destination: l'état destination de la transition
     """
-    def ajouter_transition(self, source, symbole, destination):
+    def ajouter_transition(self, source, symboles, destination):
         if source not in self.etats or destination not in self.etats:
             raise ValueError("État source ou destination invalide")
-        if symbole not in self.alphabet:
-            raise ValueError("Symbole non présent dans l'alphabet")
+        for symbole in symboles:
+            if symbole not in self.alphabet:
+                raise ValueError("Symbole non présent dans l'alphabet")
         if source not in self.transitions:
             self.transitions[source] = {}
-        if symbole in self.transitions[source]:
-            raise ValueError("Transition déjà définie pour ce symbole")
-        self.transitions[source][symbole] = destination
-
-    """
-        La fonction symbole_transition permet de récupérer le symbole d'une transition entre deux états.
-        paramètres:
-            - source: l'état source de la transition
-            - destination: l'état destination de la transition
-    
-        retourne:
-            - le symbole de la transition si elle existe, None sinon
-
-    """
-    def symbole_transition(self, source, destination):
-        for symbole, dest in self.transitions.get(source, {}).items():
-            if dest == destination:
-                return symbole
-        return None
+        if tuple(symboles) in self.transitions[source]:
+            raise ValueError("Transition déjà définie pour ces symboles")
+        self.transitions[source][tuple(symboles)] = destination
 
     """
         La fonction destination_transition permet de récupérer l'état destination d'une transition à partir d'un état source et d'un symbole.
         paramètres:
             - source: l'état source de la transition
-            - symbole: le symbole de la transition
+            - symboles: les symboles de la transition
     
         retourne:
             - l'état destination de la transition si elle existe, None sinon
     """
-    def destination_transition(self, source, symbole):
-        return self.transitions.get(source, {}).get(symbole)
+    def destination_transition(self, source, symboles):
+        return self.transitions.get(source, {}).get(tuple(symboles))
 
     """
         La fonction __str__ permet d'afficher l'automate.
@@ -87,8 +72,8 @@ class Automate:
         result += "Etats terminaux: " + str(self.terminaux) + "\n"
         result += "Transitions:\n"
         for source, transitions in self.transitions.items():
-            for symbole, destination in transitions.items():
-                result += f"     {source} --({symbole})--> {destination}\n"
+            for symboles, destination in transitions.items():
+                result += f"     {source} --({', '.join(symboles)})--> {destination}\n"
         return result
     
     """
@@ -106,10 +91,8 @@ class Automate:
                 dot.node(etat, shape='doublecircle')
             dot.node(etat)
         for source, transitions in self.transitions.items():
-
-            for symbole, destination in transitions.items():
-                dot.edge(source, destination, label=symbole)
-            
+            for symboles, destination in transitions.items():
+                dot.edge(source, destination, label=', '.join(symboles))
         return dot
 
     """
@@ -122,20 +105,7 @@ class Automate:
         dot.render(filename, format='png', cleanup=True)
 
     
-    ## Ajouter une transition qui peut avoir un ou plusieurs symboles
-        
-    def ajouter_transition_multi(self, source, symboles, destination):
-        if source not in self.etats or destination not in self.etats:
-            raise ValueError("État source ou destination invalide")
-        for symbole in symboles:
-            ## Si un transition existe déjà, on ajoute le symbole à la liste des symboles
-            if source not in self.transitions:
-                self.transitions[source] = {}
-            if symbole in self.transitions[source]:
-                self.transitions[source][symbole].append(destination)
-            else:
-                self.transitions[source][symbole] = [destination]
-
+    
 
                 
 
@@ -151,16 +121,16 @@ automate.ajouter_etat('3', est_terminal=True)
 automate.ajouter_etat('4')
 
 # Ajout des transitions
-automate.ajouter_transition_multi('1', 'a', '2')
-automate.ajouter_transition_multi('2', 'b', '3')
-automate.ajouter_transition_multi('3', 'c','4')
-automate.ajouter_transition_multi('3', 'd','4')
-automate.ajouter_transition_multi('3', 'ba', '3')
+automate.ajouter_transition('1', ['a'], '2')
+automate.ajouter_transition('2', ['b', 'c'], '3')
+automate.ajouter_transition('2', ['d'], '4')
+automate.ajouter_transition('4', ['a'], '3')
+automate.ajouter_transition('4', ['b'], '2')
 
 # Affichage de l'automate
 print(automate)
 #print(automate.to_dot())
-#automate.to_png('automate')
+automate.to_png('automate')
 
 
 
