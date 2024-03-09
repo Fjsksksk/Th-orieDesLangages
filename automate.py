@@ -104,8 +104,25 @@ class Automate:
         dot = self.to_dot()
         dot.render(filename, format='png', cleanup=True)
 
-    
-    
+def exporter_automate(automate, filename):
+    with open(filename, 'w') as file:
+        # Écriture de l'alphabet
+        file.write(' '.join(automate.alphabet) + '\n')
+        
+        # Écriture des états
+        file.write(' '.join(automate.etats) + '\n')
+        
+        # Écriture des états initiaux
+        file.write(' '.join(automate.initiaux) + '\n')
+        
+        # Écriture des états terminaux
+        file.write(' '.join(automate.terminaux) + '\n')
+        
+        # Écriture des transitions
+        for source, transitions in automate.transitions.items():
+            for symboles, destination in transitions.items():
+                file.write(f"{source} {' '.join(symboles)} {destination}\n")
+
 
                 
 
@@ -122,8 +139,8 @@ automate.ajouter_etat('4')
 
 # Ajout des transitions
 automate.ajouter_transition('1', ['a'], '2')
-automate.ajouter_transition('2', ['b', 'c'], '3')
-automate.ajouter_transition('2', ['d'], '4')
+automate.ajouter_transition('2', ['b'], '3')
+automate.ajouter_transition('2', ['d', 'c'], '4')
 automate.ajouter_transition('4', ['a'], '3')
 automate.ajouter_transition('4', ['b'], '2')
 
@@ -131,6 +148,11 @@ automate.ajouter_transition('4', ['b'], '2')
 print(automate)
 #print(automate.to_dot())
 automate.to_png('automate')
+
+exporter_automate(automate, 'automate.txt')
+
+
+
 
 
 
