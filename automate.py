@@ -104,6 +104,13 @@ class Automate:
         dot = self.to_dot()
         dot.render(filename, format='png', cleanup=True)
 
+
+"""
+    La fonction exporter_automate permet d'exporter un automate dans un fichier texte.
+    paramètres:
+        - automate: l'automate à exporter
+        - filename: le nom du fichier
+"""
 def exporter_automate(automate, filename):
     with open(filename, 'w') as file:
         # Écriture de l'alphabet
@@ -124,33 +131,48 @@ def exporter_automate(automate, filename):
                 file.write(f"{source} {' '.join(symboles)} {destination}\n")
 
 
+"""
+    La fonction importer_automate permet d'importer un automate à partir d'un fichier texte.
+    paramètres:
+        - filename: le nom du fichier
+    retourne:
+        - l'automate importé
+"""
+def importer_automate(filename):
+    #Vérifie si le fichier existe
+    try:
+        open(filename, 'r')
+    except FileNotFoundError:
+        print("Le fichier n'existe pas")
+        return
+
+    with open(filename, 'r') as file:
+        # Lecture de l'alphabet
+        alphabet = set(file.readline().split())
+        
+        # Lecture des états
+        etats = set(file.readline().split())
+        
+        # Lecture des états initiaux
+        initiaux = set(file.readline().split())
+        
+        # Lecture des états terminaux
+        terminaux = set(file.readline().split())
+        
+        # Création de l'automate
+        automate = Automate(alphabet)
+        for etat in etats:
+            est_initial = etat in initiaux
+            est_terminal = etat in terminaux
+            automate.ajouter_etat(etat, est_initial, est_terminal)
+        
+        # Lecture des transitions
+        for line in file:
+            source, *symboles, destination = line.split()
+            automate.ajouter_transition(source, symboles, destination)
+        
+        return automate
                 
-
-## test ##
-
-# Création d'un automate avec un alphabet {'a', 'b', 'c','d'}
-automate = Automate({'a', 'b', 'c','d'})
-
-# Ajout des états avec indication des états initiaux et terminaux
-automate.ajouter_etat('1', est_initial=True)
-automate.ajouter_etat('2')
-automate.ajouter_etat('3', est_terminal=True)
-automate.ajouter_etat('4')
-
-# Ajout des transitions
-automate.ajouter_transition('1', ['a'], '2')
-automate.ajouter_transition('2', ['b'], '3')
-automate.ajouter_transition('2', ['d', 'c'], '4')
-automate.ajouter_transition('4', ['a'], '3')
-automate.ajouter_transition('4', ['b'], '2')
-
-# Affichage de l'automate
-print(automate)
-#print(automate.to_dot())
-automate.to_png('automate')
-
-exporter_automate(automate, 'automate.txt')
-
 
 
 
