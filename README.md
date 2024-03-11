@@ -3,6 +3,11 @@
 ## Introduction
 
 
+## Les différents fichiers
+
+- `automate.py` : contient la classe `Automate` qui permet de modéliser un automate. Cette contient les méthode permettant de travailler sur un automate.
+- `partie1.py` : contient les tests de la classe `Automate` et les tests des méthodes de la classe `Automate` pour la partie 1 du projet.
+
 
 ## Partie 1 : Modélisation d'un automate
 
