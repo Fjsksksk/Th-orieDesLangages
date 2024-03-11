@@ -139,6 +139,13 @@ def exporter_automate(automate, filename):
         - l'automate importé
 """
 def importer_automate(filename):
+    #Vérifie si le fichier existe
+    try:
+        open(filename, 'r')
+    except FileNotFoundError:
+        print("Le fichier n'existe pas")
+        return
+
     with open(filename, 'r') as file:
         # Lecture de l'alphabet
         alphabet = set(file.readline().split())
@@ -166,8 +173,6 @@ def importer_automate(filename):
         
         return automate
                 
-
-
 
 
 
