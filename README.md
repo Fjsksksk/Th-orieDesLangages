@@ -51,3 +51,26 @@ La structure du fichier d'exportation est la suivante :
 - `importer_automate` : est une fonction qui permet d'importer un automate depuis un fichier texte et prend en paramètre le nom du fichier texte. 
 La fonction rempli d'abord les variables qui vont nous permettre de créer l'automate. Pour cela elle suit la logique expliqué précédement. 
 Une fois cela effectué, elle crée un nouvel automate qu'elle retourne. 
+
+## Partie 2 : 
+
+### 2.1. Union de deux automates
+
+La méthode `union` du fichier `automate.py` permet de réaliser l'union de deux automates.
+
+**Alphabet** : L'alphabet de l'automate résultant est l'union des alphabets des deux automates plus un symbole supplémentaire, `une chaine vide`. Celui-ci permettra de réaliser des transitions vide.
+
+**États** : 
+- Dans un premier temps, nous procédons à un renommage des états des deux automates pour éviter les conflits.
+- Ensuite, nous ajoutons un nouvel état initial et un état pour distribuer l'état initial aux anciens états initiaux des deux automates.
+
+**Transitions et Etat Terminaux** :
+- Nous ajoutons les transitions et les états terminaux des deux automates à l'automate résultant.
+- Ajout de la transition vide entre le nouvel état initial et le nouvel état de distribution de l'état initial.
+- Ajout de la transition vide entre les anciens état initiaux des deux automates et l'état temporaire
+
+**Problème** : Nous avons un problème sur le fait que l'on pouvait ajouter une seul destination via notre méthode `ajouter_transition`. Or avec notre méthode `union` nous avons besoin de pouvoir ajouter plusieurs destinations. Lors de l'éxécution de la méthode `union` l'ajout se réalise correctement mais en écrasant l'ancien ajout. 
+
+Pour cela, nous avons modifié la méthode `ajouter_transition` pour qu'elle puisse ajouter plusieurs destinations. 
+Maintenant, nous avons le résultat attendu.
+
