@@ -44,9 +44,9 @@ class Automate:
                 raise ValueError("Symbole non présent dans l'alphabet")
         if source not in self.transitions:
             self.transitions[source] = {}
-        if tuple(symboles) in self.transitions[source]:
-            raise ValueError("Transition déjà définie pour ces symboles")
-        self.transitions[source][tuple(symboles)] = destination
+        if tuple(symboles) not in self.transitions[source]:
+            self.transitions[source][tuple(symboles)] = set()  # Utilisation d'un ensemble pour stocker les destinations multiples
+        self.transitions[source][tuple(symboles)].add(destination)
 
     """
         La fonction destination_transition permet de récupérer l'état destination d'une transition à partir d'un état source et d'un symbole.
@@ -84,15 +84,20 @@ class Automate:
     def to_dot(self):
         dot = Digraph()
         dot.attr(rankdir='LR')
+
         for etat in self.etats:
             if etat in self.initiaux:
                 dot.node(etat, shape='point')
-            if etat in self.terminaux:
+            elif etat in self.terminaux:
                 dot.node(etat, shape='doublecircle')
-            dot.node(etat)
+            else:
+                dot.node(etat)
+
         for source, transitions in self.transitions.items():
-            for symboles, destination in transitions.items():
-                dot.edge(source, destination, label=', '.join(symboles))
+            for symboles, destinations in transitions.items():
+                for destination in destinations:
+                    dot.edge(source, destination, label=', '.join(symboles))
+
         return dot
 
     """
@@ -103,6 +108,9 @@ class Automate:
     def to_png(self, filename):
         dot = self.to_dot()
         dot.render(filename, format='png', cleanup=True)
+
+
+
 
 
 """
@@ -172,9 +180,51 @@ def importer_automate(filename):
             automate.ajouter_transition(source, symboles, destination)
         
         return automate
-                
 
 
 
 
 
+
+
+def union(automate1, automate2):
+    # Création d'un nouvel automate pour l'union
+    union_automate = Automate(set.union(automate1.alphabet, automate2.alphabet))
+    # Ajout du symbole vide à l'alphabet de l'union
+    union_automate.alphabet.add('')
+
+    # Ajout des états en renommant les états si nécessaire pour éviter les conflits
+    for etat in automate1.etats:
+        union_automate.ajouter_etat("A1_" + etat)
+    for etat in automate2.etats:
+        union_automate.ajouter_etat("A2_" + etat)
+
+    # Ajout de l'état initial pour l'union
+    union_automate.ajouter_etat("Initial", est_initial=True)
+
+    # Ajout de l'état temporaire
+    union_automate.ajouter_etat("temporaire")
+
+    # Ajout des transitions et des états terminaux
+    for source, transitions in automate1.transitions.items():
+        for symboles, destinations in transitions.items():
+            for destination in destinations:
+                union_automate.ajouter_transition("A1_" + source, symboles, "A1_" + destination)
+    for source, transitions in automate2.transitions.items():
+        for symboles, destinations in transitions.items():
+            for destination in destinations:
+                union_automate.ajouter_transition("A2_" + source, symboles, "A2_" + destination)
+
+    # Ajout de la transition epsilon de l'état initial de l'union vers l'état temporaire
+    union_automate.ajouter_transition("Initial", [''], "temporaire")
+
+    # Ajout des transitions de l'état temporaire vers les anciens états initiaux des deux automates
+    for etat_initial in automate1.initiaux:
+        union_automate.ajouter_transition("temporaire", [''], "A1_" + etat_initial)
+    for etat_initial in automate2.initiaux:
+        union_automate.ajouter_transition("temporaire", [''], "A2_" + etat_initial)
+
+    # Définition de l'état initial unique pour l'union
+    union_automate.initiaux = {"Initial"}
+
+    return union_automate
