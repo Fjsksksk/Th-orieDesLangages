@@ -1,6 +1,6 @@
 import sys
 sys.path.append('../')
-from automate import Automate, union
+from automate import Automate, concatenation
 
 import os
 
@@ -50,7 +50,7 @@ automate1.to_png('conca1')
 automate2.to_png('conca2')
 
 # Concaténation des deux automates
-automate = concatenation_automate(automate1, automate2)
+automate = concatenation(automate1, automate2)
 automate.to_png('conca')
 
 

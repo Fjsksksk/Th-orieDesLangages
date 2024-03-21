@@ -109,6 +109,38 @@ class Automate:
         dot = self.to_dot()
         dot.render(filename, format='png', cleanup=True)
 
+        """
+        La fonction supprimer_etat permet de supprimer un état de l'automate, ainsi que toutes les transitions associées à cet état.
+        paramètres:
+            - etat: l'état à supprimer
+    """
+    def supprimer_etat(self, etat):
+        # Vérifier si l'état existe dans l'automate
+        if etat not in self.etats:
+            raise ValueError("L'état spécifié n'existe pas dans l'automate")
+
+        # Supprimer l'état de la liste des états
+        self.etats.remove(etat)
+
+        # Supprimer l'état des états initiaux et terminaux s'il est présent
+        self.initiaux.discard(etat)
+        self.terminaux.discard(etat)
+
+        # Créer une copie des transitions pour éviter les erreurs de taille pendant l'itération
+        transitions_copy = self.transitions.copy()
+
+        # Supprimer toutes les transitions liées à cet état
+        for source, transitions in transitions_copy.items():
+            if source == etat:
+                del self.transitions[source]  # Supprimer toutes les transitions partant de cet état
+            else:
+                for symboles, destinations in transitions.items():
+                    self.transitions[source][symboles] = {dest for dest in destinations if dest != etat}
+
+        # Supprimer toutes les transitions arrivant à cet état
+        self.transitions = {source: {symboles: destinations for symboles, destinations in transitions.items() if etat not in destinations} for source, transitions in self.transitions.items()}
+
+
 
 
 
@@ -185,7 +217,14 @@ def importer_automate(filename):
 
 
 
-
+"""
+    La fonction union permet de réaliser une union entre deux automates.
+    paramètres:
+        - automate1: le premier automate
+        - automate2: le deuxième automate
+    retourne:
+        - l'automate résultant de l'union
+"""
 
 def union(automate1, automate2):
     # Création d'un nouvel automate pour l'union
@@ -215,16 +254,97 @@ def union(automate1, automate2):
             for destination in destinations:
                 union_automate.ajouter_transition("A2_" + source, symboles, "A2_" + destination)
 
+    #parcours les transitions des états initiaux de l'automate 1
+    for source, transitions in automate1.transitions.items():
+        for symboles, destinations in transitions.items():
+            for destination in destinations:
+                if source in automate1.initiaux:
+                    union_automate.ajouter_transition("temporaire", symboles, "A1_" + destination)
+
+    #parcours les transitions des états initiaux de l'automate 2
+    for source, transitions in automate2.transitions.items():
+        for symboles, destinations in transitions.items():
+            for destination in destinations:
+                if source in automate2.initiaux:
+                    union_automate.ajouter_transition("temporaire", symboles, "A2_" + destination)
+    
+    # Suppression des états initiaux de l'automate 1 et 2
+    for etat_initial in automate1.initiaux:
+        union_automate.supprimer_etat("A1_" + etat_initial)
+    for etat_initial in automate2.initiaux:
+        union_automate.supprimer_etat("A2_" + etat_initial)
+        
+
     # Ajout de la transition epsilon de l'état initial de l'union vers l'état temporaire
     union_automate.ajouter_transition("Initial", [''], "temporaire")
 
-    # Ajout des transitions de l'état temporaire vers les anciens états initiaux des deux automates
-    for etat_initial in automate1.initiaux:
-        union_automate.ajouter_transition("temporaire", [''], "A1_" + etat_initial)
-    for etat_initial in automate2.initiaux:
-        union_automate.ajouter_transition("temporaire", [''], "A2_" + etat_initial)
-
-    # Définition de l'état initial unique pour l'union
-    union_automate.initiaux = {"Initial"}
+    # Ajout des états terminaux de l'automate 1 et 2
+    for etat_terminal in automate1.terminaux:
+        union_automate.ajouter_etat("A1_" + etat_terminal, est_terminal=True)
+    for etat_terminal in automate2.terminaux:
+        union_automate.ajouter_etat("A2_" + etat_terminal, est_terminal=True)
+        
 
     return union_automate
+
+
+
+
+
+
+# Fonction permettant de faire la concaténation de deux automates
+
+def concatenation(automate1, automate2):
+    # Création d'un nouvel automate pour la concaténation
+    automate_concatene = Automate(automate1.alphabet.union(automate2.alphabet))
+
+    # Ajout du symbole vide à l'alphabet de la concaténation
+    automate_concatene.alphabet.add('')
+
+    # Ajout des états en renommant les états si nécessaire pour éviter les conflits
+    for etat in automate1.etats:
+        #Si l'état est initial, on le laisse initial
+        if etat in automate1.initiaux:  
+            automate_concatene.ajouter_etat("A1_" + etat, est_initial=True)
+        automate_concatene.ajouter_etat("A1_" + etat)
+    for etat in automate2.etats:
+        automate_concatene.ajouter_etat("A2_" + etat)
+
+
+
+    # Ajout des transitions et des états terminaux
+    for source, transitions in automate1.transitions.items():
+        for symboles, destinations in transitions.items():
+            for destination in destinations:
+                automate_concatene.ajouter_transition("A1_" + source, symboles, "A1_" + destination)
+    for source, transitions in automate2.transitions.items():
+        for symboles, destinations in transitions.items():
+            for destination in destinations:
+                automate_concatene.ajouter_transition("A2_" + source, symboles, "A2_" + destination)
+    
+    # Ajout état temporaire
+    automate_concatene.ajouter_etat("temporaire")
+
+    # Ajout des transition vide de l'automate 1 vers état temporaire
+    for etat_terminal in automate1.terminaux:
+        automate_concatene.ajouter_transition("A1_" + etat_terminal, [''], "temporaire")
+
+   #parcours les transitions des états initiaux de l'automate 2
+    for source, transitions in automate2.transitions.items():
+        for symboles, destinations in transitions.items():
+            for destination in destinations:
+                if source in automate2.initiaux:
+                    automate_concatene.ajouter_transition("temporaire", symboles, "A2_" + destination)
+    
+    # Suppression des états initiaux de l'automate 2
+    for etat_initial in automate2.initiaux:
+        automate_concatene.supprimer_etat("A2_" + etat_initial)
+
+    #ajout des états terminaux de l'automate 2
+    for etat_terminal in automate2.terminaux:
+        automate_concatene.ajouter_etat("A2_" + etat_terminal, est_terminal=True)
+    
+    return automate_concatene
+
+
+
