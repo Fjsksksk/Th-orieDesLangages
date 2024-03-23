@@ -52,7 +52,10 @@ La structure du fichier d'exportation est la suivante :
 La fonction rempli d'abord les variables qui vont nous permettre de créer l'automate. Pour cela elle suit la logique expliqué précédement. 
 Une fois cela effectué, elle crée un nouvel automate qu'elle retourne. 
 
-## Partie 2 : 
+### 1.4 Exemple d'automate
+
+
+## Partie 2 : Opérations sur les automates
 
 ### 2.1. Union de deux automates
 
@@ -73,4 +76,27 @@ La méthode `union` du fichier `automate.py` permet de réaliser l'union de deux
 
 Pour cela, nous avons modifié la méthode `ajouter_transition` pour qu'elle puisse ajouter plusieurs destinations. 
 Maintenant, nous avons le résultat attendu.
+
+### 2.1 Concaténation de deux automates. 
+
+La méthode `concatenation` du fichier `automate.py` permet de réaliser la concaténation de deux automates. 
+
+**Alphabet** : L'alphabet de l'automate résultant est l'union des alphabets des deux automates plus un symbole supplémentaire, `une chaine vide`. Celui-ci permettra de réaliser des transitions vide.
+
+**Etats** :
+- Dans un premier temps, nous procédons à un renommage des états des deux automates pour éviter les conflits.
+- Ensuite, nous ajoutons un nouvel état initial et un état pour distribuer l'état initial aux anciens états initiaux des deux automates.
+
+**Transitions et Etat Terminaux** :
+- Nous ajoutons les transitions et les états terminaux des deux automates à l'automate de la concaténation.
+- Ajout de la transition vide entre les anciens état terminaux de l'automate 1 et l'état temporaire. 
+- Ajout de la transition vide entre l'état temporaire et les anciens états initiaux de l'automate 2. 
+
+
+## Partie 3 : Finalisation
+
+### 3.1 Déterminisation d'un automate
+
+- Fonction `est_déterministe` de la classe `Àutomate` permet de savoir si un automate est déterministe. Si oui, elle retourne `True`, sinon, elle retourne `False`
+
 

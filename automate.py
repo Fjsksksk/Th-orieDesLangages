@@ -140,8 +140,19 @@ class Automate:
         # Supprimer toutes les transitions arrivant à cet état
         self.transitions = {source: {symboles: destinations for symboles, destinations in transitions.items() if etat not in destinations} for source, transitions in self.transitions.items()}
 
+    """
+    La fonction est_deterministe permet de vérifier si un automate est déterministe.
+    retourne:
+        - True si l'automate est déterministe, False sinon
+    """
+    def est_deterministe(self):
+        for source, transitions in self.transitions.items():
+            for symboles, destinations in transitions.items():
+                if len(destinations) > 1:
+                    return False
+        return True
 
-
+    
 
 
 
@@ -345,6 +356,8 @@ def concatenation(automate1, automate2):
         automate_concatene.ajouter_etat("A2_" + etat_terminal, est_terminal=True)
     
     return automate_concatene
+
+
 
 
 
