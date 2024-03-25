@@ -77,7 +77,7 @@ La méthode `union` du fichier `automate.py` permet de réaliser l'union de deux
 Pour cela, nous avons modifié la méthode `ajouter_transition` pour qu'elle puisse ajouter plusieurs destinations. 
 Maintenant, nous avons le résultat attendu.
 
-### 2.1 Concaténation de deux automates. 
+### 2.2 Concaténation de deux automates. 
 
 La méthode `concatenation` du fichier `automate.py` permet de réaliser la concaténation de deux automates. 
 
@@ -92,10 +92,14 @@ La méthode `concatenation` du fichier `automate.py` permet de réaliser la conc
 - Ajout de la transition vide entre les anciens état terminaux de l'automate 1 et l'état temporaire. 
 - Ajout de la transition vide entre l'état temporaire et les anciens états initiaux de l'automate 2. 
 
+## 2.3 Répétition d'un automate
 
-## Partie 3 : Finalisation
 
-### 3.1 Déterminisation d'un automate
+## Partie 4 : Finalisation
+
+### 4.1 Compléter un automate
+
+### 4.2 Déterminisation d'un automate
 
 - Fonction `est_déterministe` de la classe `Àutomate` permet de savoir si un automate est déterministe. Si oui, elle retourne `True`, sinon, elle retourne `False`
 

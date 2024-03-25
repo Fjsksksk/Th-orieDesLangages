@@ -140,17 +140,90 @@ class Automate:
         # Supprimer toutes les transitions arrivant à cet état
         self.transitions = {source: {symboles: destinations for symboles, destinations in transitions.items() if etat not in destinations} for source, transitions in self.transitions.items()}
 
+    '''
+    La fonction completer permet de compléter un automate.
+    ajouter un etat puit
+    pour chaque etat de l'automate
+        pour chaque symbole de l'alphabet
+            si il n'existe pas de transition de l'etat avec le symbole
+                ajouter une transition de l'etat avec le symbole vers l'etat puit
+    '''
+    def completer(self):
+        print("Compléter l'automate")
+        self.ajouter_etat('puit')
+        
+        print(self.etats)
+
+        
+        for etat in self.etats:
+            #si l'etat est initial on passe le reste
+            print("ETAT : ", etat)
+            if etat in self.initiaux:
+                print("EST INITIAL : ")
+                print('-------------------------')
+                continue
+            if etat== 'puit':
+                print("EST PUIT : ")
+                self.ajouter_transition('puit', self.alphabet, 'puit')
+                print('-------------------------')
+                continue
+            
+            symbole_list = []
+            transitions = self.transitions.get(etat, {})
+            print("TRANSITIONS : ", transitions)
+            # Récupère les symboles de transition de l'état
+            for symboles, destinations in transitions.items():
+                for symbole in symboles:
+                    symbole_list.append(symbole)
+            print("SYMBOLS : ", symbole_list)
+            for element in self.alphabet:
+                if element not in symbole_list:
+                    print("ELEMENT non présent: ", element)
+                    self.ajouter_transition(etat, [element], 'puit')
+            print('-------------------------')
+
+        return self
+
+    
+    
     """
     La fonction est_deterministe permet de vérifier si un automate est déterministe.
+    Il ne peut pas y avoir deux transitions sortantes d'un même état avec le même symbole.
     retourne:
         - True si l'automate est déterministe, False sinon
     """
     def est_deterministe(self):
+        # Parcours les états de l'automate
         for source, transitions in self.transitions.items():
+            # Pour chaque état stock les symboles de transition dans une liste
+            symboles_list = []
+            # Parcours les transitions de chaque état
             for symboles, destinations in transitions.items():
-                if len(destinations) > 1:
-                    return False
+                # Ajoute les symboles de transition dans la liste
+                for symbole in symboles:
+                    # Si le symbole est déjà présent dans la liste, l'automate n'est pas déterministe
+                    if symbole in symboles_list:
+                        return False
+                    else:
+                        symboles_list.append(symbole)
         return True
+        
+    
+    def determiniser(self):
+        print("Déterminisation")
+        # Vérifie si l'automate est déjà déterministe
+        if self.est_deterministe():
+            return self
+
+        # Création d'un nouvel automate déterministe
+        automate_deterministe = Automate(self.alphabet)
+
+        # Ajout du symbole vide à l'alphabet de l'automate déterministe
+        automate_deterministe.alphabet.add('')
+
+       
+        
+        return automate_deterministe
 
     
 
