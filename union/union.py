@@ -7,7 +7,7 @@ from automate import Automate, union
 
 
 import os
-
+from IPython.display import display, Image
 
 
 # Création de l'automate 1
@@ -60,12 +60,20 @@ if os.path.exists('union.png'):
 
 
 automate1.to_png('union1')
+print('automate1')
+display(Image('union1.png'))
 automate2.to_png('union2')
+print('automate2')
+display(Image('union2.png'))
 
 # Union des deux automates
+print("\n\n")
+print("Union des deux automates :\n")
 automate = union(automate1, automate2)
 print(automate)
 automate.to_png('union')
+print('\n Résultat de l\'union des deux automates :')
+display(Image('union.png'))
 
 
 

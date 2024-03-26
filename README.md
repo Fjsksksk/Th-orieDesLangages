@@ -1,12 +1,39 @@
-# TheorieDesLangages
+# Projet Théorie des langages
 
 ## Introduction
+Le projet a lieu dans le cadre du cours de théories des langages réalisé au Semestre 2 de la deuixème année de Licence Sciences du Numérique. 
+Il a été réalisé par Candice Giami et Clément Szewczyk. 
+
+L'objectif du projet est d'implémenter une bibliotèque de fonction sur les automates en **python**. 
+
+Les étapes du projet : 
+- modélisation d’un automate.
+- de charger la description d’un automate sous forme d’un fichier texte (texte brut, json, xml…) dont vous définirez
+le format
+- de sauvegarder la description d’un automate sous forme d’un fichier texte dont le format respecte celui en lecture
+- d’afficher l’automate à l’écran ou de générer un fichier image.
+- Réaliser des opérations élémentaires sur les automates (union, concaténation et répétition)
+- Synchroniser un automate (suppression des 𝜖-transitions) **(BONUS)**
+- Construire un automate à partir d’une expression régulière **(BONUS)**
+- Compléter/Déterminiser/Minimiser un automate
+- Reconnaitre une adresse mail à l’aide d’un automate
+
+Les étapes sont découpé en 4 parties :
+1. Modélisation d'un automate
+2. Opérations sur les automates
+3. Expressions régulières verd Automates (Bonus)
+4. Finalisation
+
 
 
 ## Les différents fichiers
 
-- `automate.py` : contient la classe `Automate` qui permet de modéliser un automate. Cette contient les méthode permettant de travailler sur un automate.
-- `partie1.py` : contient les tests de la classe `Automate` et les tests des méthodes de la classe `Automate` pour la partie 1 du projet.
+- `automate.py` : contient la classe `Automate` qui permet de modéliser un automate. Cette contient les méthode permettant de travailler sur un automate. Il contient également les méthodes permettant de réaliser des opérations sur les automates (union, concaténation, répétition) ainsi que l'exportation et l'importation d'un automate.
+- `partie1.py` : contient les tests de la classe `Automate` et les tests des méthodes de la classe `Automate` pour la partie 1 du projet.`
+- `union/union.py`: contient le fichier de test pour la méthode `union` du fichier `Automate`
+- `concatenation/concatenation.py`: contient le fichier de test pour la méthode `concatenation` du fichier `Automate`
+- `partie_4/determinisation/determinisation.py`: contient le fichier de test pour la méthode `determinisation` du fichier `Automate`
+
 
 
 ## Partie 1 : Modélisation d'un automate
@@ -59,6 +86,7 @@ Une fois cela effectué, elle crée un nouvel automate qu'elle retourne.
 
 ### 2.1. Union de deux automates
 
+#### 2.1.1 Méthode 'union'
 La méthode `union` du fichier `automate.py` permet de réaliser l'union de deux automates.
 
 **Alphabet** : L'alphabet de l'automate résultant est l'union des alphabets des deux automates plus un symbole supplémentaire, `une chaine vide`. Celui-ci permettra de réaliser des transitions vide.
@@ -76,8 +104,11 @@ La méthode `union` du fichier `automate.py` permet de réaliser l'union de deux
 
 Pour cela, nous avons modifié la méthode `ajouter_transition` pour qu'elle puisse ajouter plusieurs destinations. 
 Maintenant, nous avons le résultat attendu.
+#### 2.1.2 Exemple d'utilisation
 
 ### 2.2 Concaténation de deux automates. 
+
+#### 2.2.1
 
 La méthode `concatenation` du fichier `automate.py` permet de réaliser la concaténation de deux automates. 
 
@@ -90,7 +121,9 @@ La méthode `concatenation` du fichier `automate.py` permet de réaliser la conc
 **Transitions et Etat Terminaux** :
 - Nous ajoutons les transitions et les états terminaux des deux automates à l'automate de la concaténation.
 - Ajout de la transition vide entre les anciens état terminaux de l'automate 1 et l'état temporaire. 
-- Ajout de la transition vide entre l'état temporaire et les anciens états initiaux de l'automate 2. 
+- Ajout de la transition vide entre l'état temporaire et les anciens états initiaux de l'automate 2.
+
+#### 2.2.2 Exemple d'utilisation
 
 ## 2.3 Répétition d'un automate
 
@@ -102,5 +135,27 @@ La méthode `concatenation` du fichier `automate.py` permet de réaliser la conc
 ### 4.2 Déterminisation d'un automate
 
 - Fonction `est_déterministe` de la classe `Àutomate` permet de savoir si un automate est déterministe. Si oui, elle retourne `True`, sinon, elle retourne `False`
+
+**Algorithme de déterminisation** :
+1. Création d'un automate vide
+2. Création de l'état initial de l'automate déterministe
+    - L'état initial de l'automate déterministe est l'ensemble des états atteignables à partir de l'état initial de l'automate non déterministe
+3. Création de la table de transition
+
+    - structure de la table de transition : 
+        - clé : état de l'automate non déterministe
+        - n colonnes : symboles de l'alphabet
+    - 1ère ligne : état initial de l'automate non déterministe
+    - 2eme et n lignes : états de l'automate non déterministe provenant de la table de transition
+
+4. Interprétation de la table de transition
+
+    - Pour chaque état de la table de transition, on crée un état dans l'automate déterministe
+
+5. Création des états terminaux de l'automate déterministe
+
+    - Un état de l'automate déterministe est terminal si au moins un des états de l'automate non déterministe qu'il représente est terminal
+
+    
 
 

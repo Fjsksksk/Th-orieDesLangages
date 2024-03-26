@@ -207,21 +207,32 @@ class Automate:
                     else:
                         symboles_list.append(symbole)
         return True
+
         
+    """
     
+   """ 
     def determiniser(self):
+        print("-------------------------")
         print("Déterminisation")
         # Vérifie si l'automate est déjà déterministe
         if self.est_deterministe():
             return self
 
-        # Création d'un nouvel automate déterministe
+        # Création de l'automate déterministe
         automate_deterministe = Automate(self.alphabet)
 
-        # Ajout du symbole vide à l'alphabet de l'automate déterministe
-        automate_deterministe.alphabet.add('')
+        # Création de l'état initial de l'automate déterministe
+        
+        
 
+
+        
+        
        
+
+
+
         
         return automate_deterministe
 
@@ -252,6 +263,7 @@ def exporter_automate(automate, filename):
         # Écriture des transitions
         for source, transitions in automate.transitions.items():
             for symboles, destination in transitions.items():
+                destination = ' '.join(destination)
                 file.write(f"{source} {' '.join(symboles)} {destination}\n")
 
 
@@ -263,39 +275,44 @@ def exporter_automate(automate, filename):
         - l'automate importé
 """
 def importer_automate(filename):
-    #Vérifie si le fichier existe
+    # Vérifie si le fichier existe
     try:
         open(filename, 'r')
     except FileNotFoundError:
         print("Le fichier n'existe pas")
-        return
+        return None
 
     with open(filename, 'r') as file:
         # Lecture de l'alphabet
         alphabet = set(file.readline().split())
-        
+
         # Lecture des états
         etats = set(file.readline().split())
-        
+
         # Lecture des états initiaux
         initiaux = set(file.readline().split())
-        
+
         # Lecture des états terminaux
         terminaux = set(file.readline().split())
-        
+
         # Création de l'automate
         automate = Automate(alphabet)
         for etat in etats:
             est_initial = etat in initiaux
             est_terminal = etat in terminaux
             automate.ajouter_etat(etat, est_initial, est_terminal)
-        
+
         # Lecture des transitions
         for line in file:
-            source, *symboles, destination = line.split()
+            
+            elements = line.split()
+            source = elements[0]
+            symboles = elements[1:-1]
+            destination = elements[-1]
             automate.ajouter_transition(source, symboles, destination)
-        
-        return automate
+
+    return automate
+
 
 
 
