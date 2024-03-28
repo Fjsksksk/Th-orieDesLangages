@@ -3,7 +3,7 @@ sys.path.append('../')
 from automate import Automate, concatenation
 
 import os
-
+from IPython.display import display, Image
 
 # Création de l'automate 1
 automate1 = Automate({'a', 'b'})
@@ -45,13 +45,23 @@ automate2.ajouter_transition('1', ['b'], '2')
 
 
 
-
+print('Automate 1:')
 automate1.to_png('conca1')
+display(Image('conca1.png'))
+
+print('Automate 2:')
 automate2.to_png('conca2')
+display(Image('conca2.png'))
+
+print("\n\n")
 
 # Concaténation des deux automates
+print("Concaténation des deux automates: \n")
 automate = concatenation(automate1, automate2)
+print(automate)
+print(automate.to_dot())
 automate.to_png('conca')
+display(Image('conca.png'))
 
 
 

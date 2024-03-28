@@ -1,5 +1,5 @@
 from automate import *
-
+from IPython.display import display, Image
 
 # Création d'un automate avec un alphabet {'a', 'b', 'c','d'}
 automate1 = Automate({'a', 'b', 'c','d'})
@@ -25,13 +25,21 @@ print(automate1)
 print("Automate 1 en format dot:")
 print(automate1.to_dot())
 
+print("Image de l'automate 1:")
+display(Image('automate1.png'))
+
 # Conversion de l'automate en image
-print("Conversion de l'automate 1 en image:")
+print("Conversion de l'automate 1 en image")
 automate1.to_png('automate1')
 
 # Exportation de l'automate
-print("Exportation de l'automate 1:")
+print("Exportation de l'automate 1")
 exporter_automate(automate1, 'automate1.txt')
+
+
+
+print("\n\n")
+
 
 # Création automate2
 print("Création de l'automate 2:")
@@ -52,14 +60,15 @@ print(automate2)
 print("Automate 2 en format dot:")
 print(automate2.to_dot())
 
+print("Image de l'automate 2:")
+display(Image('automate2.png'))
+
 # Conversion de l'automate2 en image
-print("Conversion de l'automate 2 en image:")
+print("Conversion de l'automate 2 en image")
 automate2.to_png('automate2')
 
 # Exportation de l'automate2
-print("Exportation de l'automate 2:")
+print("Exportation de l'automate 2")
 exporter_automate(automate2, 'automate2.txt')
-
-
 
 
