@@ -123,9 +123,11 @@ La méthode `concatenation` du fichier `automate.py` permet de réaliser la conc
 - Ajout de la transition vide entre les anciens état terminaux de l'automate 1 et l'état temporaire. 
 - Ajout de la transition vide entre l'état temporaire et les anciens états initiaux de l'automate 2.
 
-#### 2.2.2 Exemple d'utilisation
+### 2.3 Répétion d'un automate 
 
-## 2.3 Répétition d'un automate
+#### 2.3.1 Méthode `repetition`
+
+#### 2.3.2 Exemple d'utilisation
 
 
 ## Partie 4 : Finalisation
@@ -156,6 +158,20 @@ La méthode `concatenation` du fichier `automate.py` permet de réaliser la conc
 
     - Un état de l'automate déterministe est terminal si au moins un des états de l'automate non déterministe qu'il représente est terminal
 
+```python
+# Regarde les différente transitions de l'état
+                for etat in etats_a_explorer[0]:
+                    # pour chaque état regarde les symboles associé a des transition
+                    for symboles, destinations in self.transitions.get(etat, {}).items():
+                        # regarde les symboles 
+                        for symbole in symboles:
+                            # regarde les destinations
+                            for destination in destinations:
+                                if symbole not in transitions:
+                                    transitions[symbole] = set()
+                                transitions[symbole].add(destination)
+                                etats_a_explorer.append(destination)
+```
     
 
 

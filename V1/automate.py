@@ -222,10 +222,15 @@ class Automate:
         # Création de l'automate déterministe
         automate_deterministe = Automate(self.alphabet)
 
-        # Création de l'état initial de l'automate déterministe
-        
         
 
+
+        return automate_deterministe
+
+       
+        
+
+        
 
         
         
@@ -233,8 +238,6 @@ class Automate:
 
 
 
-        
-        return automate_deterministe
 
     
 
