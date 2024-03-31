@@ -2,6 +2,15 @@ import sys
 sys.path.append('../')
 from automate import Automate, importation
 from IPython.display import Image, display
+import os
+
+# Suppression des images précédentes
+if os.path.exists('Modelisation1.png'):
+    os.remove('Modelisation1.png')
+if os.path.exists('modelisation2.png'):
+    os.remove('modelisation2.png')
+if os.path.exists('modelisation1.txt'):
+    os.remove('modelisation1.txt')
 
 automat1 = Automate(['a', 'b', 'c', 'd'])
 
