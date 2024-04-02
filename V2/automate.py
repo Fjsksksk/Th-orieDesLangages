@@ -175,24 +175,14 @@ class Automate:
                 table[etat][symbole] = tuple_etats_arrivee
                 
                 
-
-
-                
                 if not tuple_etats_arrivee:
-                    
                     continue
                 
                 if tuple_etats_arrivee not in etat_a_traiter:
-
                     etat_a_traiter.append(tuple_etats_arrivee)
-
                     continue
-
-                else : 
-
+                else: 
                     continue
-
-
        
         return table
     
@@ -256,9 +246,88 @@ class Automate:
 
 
         return automate_determinise
+    
+    
+    def minimiser(self):
+        # Déterminisation de l'automate si nécessaire
+        if not self.est_deterministe():
+            self = self.determiniser()
+
+        # Initialisation de la partition avec les états terminaux et non-terminaux
+        partition = [{etat.nom for etat in self.etats if etat.terminal},
+                    {etat.nom for etat in self.etats if not etat.terminal}]
+        
+
+        # Fonction pour trouver le groupe d'un état
+        def trouver_groupe(etat):
+            for i, groupe in enumerate(partition):
+                if etat in groupe:
+                    return i
+            return -1  # Si l'état n'appartient à aucun groupe
+
+        # Fonction pour diviser une partition en fonction d'un symbole
+        def diviser_partition(symbole):
+            nouvelle_partition = []
+            for groupe in partition:
+                nouvelles_partitions = {}
+                for etat in groupe:
+                    arrivees = {transition.arrivee for transition in self.transitions
+                                if transition.depart == etat and symbole in transition.symbole}
+                    groupe_arrivee = tuple(sorted([trouver_groupe(arrivee) for arrivee in arrivees]))
+                    if groupe_arrivee not in nouvelles_partitions:
+                        nouvelles_partitions[groupe_arrivee] = {etat}
+                    else:
+                        nouvelles_partitions[groupe_arrivee].add(etat)
+                nouvelle_partition.extend(list(nouvelles_partitions.values()))
+            return nouvelle_partition
+
+        # Itération jusqu'à la stabilisation de la partition
+        ancienne_partition = []
+        while partition != ancienne_partition:
+            ancienne_partition = partition.copy()
+            for symbole in self.alphabet:
+                partition = diviser_partition(symbole)
+
+        # Construction de l'automate minimal
+        automate_minimal = Automate(self.alphabet)
+        # Création des états
+        for groupe in partition:
+            nom_etat = ','.join(sorted(list(groupe)))
+            terminal = any(etat.terminal for etat in self.etats if etat.nom in groupe)
+            initial = any(etat.initial for etat in self.etats if etat.nom in groupe)
+            automate_minimal.ajouter_etat(nom_etat, terminal, initial)
+            
+
+        # Création des transitions
+        transitions_existantes = []  # Pour stocker les transitions existantes entre les groupes
+        for transition in self.transitions:
+            a_ajouter = True
+            depart_groupe = trouver_groupe(transition.depart)
+            arrivee_groupe = trouver_groupe(transition.arrivee)
+            # Si les groupes existent
+            if depart_groupe != -1 and arrivee_groupe != -1:
+                # Création des noms des groupes
+                depart_groupe_nom = ','.join(sorted(list(partition[depart_groupe])))
+                arrivee_groupe_nom = ','.join(sorted(list(partition[arrivee_groupe])))
+                
+                transition_existe = (depart_groupe_nom, transition.symbole, arrivee_groupe_nom)
+                # Vérification si la transition existe déjà
+                for transition_ex in transitions_existantes:
+                    if transition_ex == transition_existe:
+                        a_ajouter = False
+                        
+                # Ajout de la transition si elle n'existe pas
+                if a_ajouter:
+                    automate_minimal.ajouter_transition(depart_groupe_nom, transition.symbole, arrivee_groupe_nom)
+                    transitions_existantes.append((depart_groupe_nom, transition.symbole, arrivee_groupe_nom))
+                
+
+        return automate_minimal
 
 
 
+
+  
 
 
         
@@ -402,44 +471,3 @@ def concatenation(automate1, automate2):
 
     return automate_concat
 
-
-
-    
-def repetition(automate):
-    #Fonction permettant de transformer un automate en une répétition de celui-ci
-    automate_repetition = Automate(automate.alphabet)
-    #Ajout du symbole vide
-    automate_repetition.alphabet.add('')
-    #Ajout de l'etat initial
-    automate_repetition.ajouter_etat('initial', initial=True)
-    #Renommer les états
-    for etat in automate.etats:
-        etat.nom = 'R_' + etat.nom
-    #Ajout des états de l'automate
-    for etat in automate.etats:
-        automate_repetition.etats.append(etat)
-    #Ajout de l'etat initial
-    automate_repetition.etats.append(Etat('initial', initial=True))
-    #Ajout des transitions
-    for etat in automate.etats:
-        if etat.initial:
-            automate_repetition.ajouter_transition('initial', '', etat.nom)
-        if etat.terminal:
-            automate_repetition.ajouter_transition(etat.nom, '', 'initial')
-        for transition in automate.transitions:
-            depart = 'R_' + transition.depart
-            arrivee = 'R_' + transition.arrivee
-            automate_repetition.ajouter_transition(depart, transition.symbole, arrivee)
-    return automate_repetition
-
-
-
-
-            
-            
-
-
-        
-
-
-    
