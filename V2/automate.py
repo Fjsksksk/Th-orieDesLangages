@@ -323,6 +323,45 @@ class Automate:
                 
 
         return automate_minimal
+    
+
+    """
+        Retourne True si le mot est accepté par l'automate, False sinon
+    """
+    def accepte_mot(self, mot):
+        # On initialise l'état courant avec l'état initial de l'automate
+        etat_courant = [etat.nom for etat in self.etats if etat.initial][0]
+        
+        # On boucle à travers chaque lettre du mot
+        
+        for lettre in mot:
+            
+            trouve = False  # Variable pour vérifier si une transition est trouvée pour la lettre
+            
+            # On boucle à travers les transitions de l'automate
+            for transition in self.transitions:
+            
+                # On vérifie si la lettre fait partie des symboles de la transition
+                # et si l'état de départ de la transition correspond à l'état courant
+                if transition.depart == etat_courant and lettre in transition.symbole:
+                    etat_courant = transition.arrivee  # Mise à jour de l'état courant
+                    trouve = True  # On indique qu'on a trouvé une transition
+                    break  # On sort de la boucle interne
+             
+            # Si aucune transition n'est trouvée pour la lettre à partir de l'état courant,
+            # on retourne False car le mot n'est pas accepté par l'automate
+            if not trouve:
+                
+                return False
+            
+        # Si toutes les lettres du mot ont été traitées avec succès,
+        # on retourne True si l'état courant à la fin est un état terminal, sinon False
+        if(etat_courant in [etat.nom for etat in self.etats if etat.terminal]):
+            return True
+        else:
+           
+            return False
+
 
 
 
